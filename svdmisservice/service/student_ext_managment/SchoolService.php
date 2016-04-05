@@ -92,35 +92,37 @@ $app->post('/school_register',  'authenticate', function() use ($app) {
 
 
 /**
- * Talants Delete
- * url - /talants_delete
+ * School Delete
+ * url - /school_delete
  * method - DELETE
- * params - tal_name
+ * params - sch_name
+ * params - sch_situated_in
  */
-$app->delete('/talants_delete', 'authenticate', function() use ($app) {
+$app->delete('/school_delete', 'authenticate', function() use ($app) {
 	
             // check for required params
-            verifyRequiredParams(array('tal_name'));
+            verifyRequiredParams(array('sch_name', 'sch_situated_in'));
 			
 			global $currunt_user_id;
 
             $response = array();
 
 			// reading post params
-            $tal_name = $app->request->delete('tal_name');
+            $sch_name = $app->request->delete('sch_name');
+			$sch_situated_in = $app->request->delete('sch_situated_in');
 			
-            $talantsManagement = new TalantsManagement();
-			$res = $talantsManagement->deleteTalant($tal_name, $currunt_user_id);
+            $schoolManagement = new SchoolManagement();
+			$res = $schoolManagement->deleteSchool($sch_name, $sch_situated_in, $currunt_user_id);
 			
             if ($res == DELETE_SUCCESSFULLY) {
                 $response["error"] = false;
-                $response["message"] = "Talant is successfully deleted";
+                $response["message"] = "School is successfully deleted";
             } else if ($res == DELETE_FAILED) {
                 $response["error"] = true;
-                $response["message"] = "Oops! An error occurred while deleting talant";
+                $response["message"] = "Oops! An error occurred while deleting school";
             } else if ($res == NOT_EXISTED) {
                 $response["error"] = true;
-                $response["message"] = "Sorry, this talant is not exist";
+                $response["message"] = "Sorry, this school is not exist";
             }
             // echo json response
             echoRespnse(201, $response);

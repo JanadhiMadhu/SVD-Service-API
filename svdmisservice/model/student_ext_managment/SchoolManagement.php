@@ -70,29 +70,30 @@ class SchoolManagement {
 	
 	
 /**
-     * Delete talant
+     * Delete school
      *
-     * @param String $tal_name Talant name for the system
+     * @param String $sch_name School name for the system
+	 * @param String $sch_situated_in where school is situated
 	 * @param String $recode_added_by
      *
      * @return database transaction status
      */
-    public function deleteTalant($tal_name, $recode_added_by) {
+    public function deleteSchool($sch_name, $sch_situated_in, $recode_added_by) {
 
 		
         $response = array();
-        // First check if talant already existed in db
-        if ($this->isTalantExists($tal_name)) {
+        // First check if school already existed in db
+        if ($this->isSchoolExists($sch_name)) {
            			
 			//
-			$stmt = $this->conn->prepare("UPDATE talants set status = 3, recode_modified_at = now() , recode_modified_by = ? where tal_name = ? and (status=1 or  status=2)");
-			$stmt->bind_param("is",$recode_added_by, $tal_name);
+			$stmt = $this->conn->prepare("UPDATE school set status = 3, recode_modified_at = now() , recode_modified_by = ? where sch_name = ? and sch_situated_in = ? and (status=1 or  status=2)");
+			$stmt->bind_param("iss",$recode_added_by, $sch_name, $sch_situated_in);
 			$result = $stmt->execute();
 			
             $stmt->close();
 
         } else {
-            // Talant is not already existed in the db
+            // School is not already existed in the db
             return NOT_EXISTED;
         }
 		
@@ -100,10 +101,10 @@ class SchoolManagement {
 
         // Check for successful insertion
         if ($result) {
-			// talant successfully deleted
+			// school successfully deleted
             return DELETE_SUCCESSFULLY;
         } else {
-            // Failed to delete talant
+            // Failed to delete school
             return DELETE_FAILED;
         }
         
