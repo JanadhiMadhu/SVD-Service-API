@@ -89,6 +89,42 @@ $app->post('/school_register',  'authenticate', function() use ($app) {
         });
 
 
+/**
+ * School Update
+ * url - /school_update/:schoolName
+ * method - PUT
+ * params - sch_name, sch_situated_in
+ */
+$app->put('/school_update/:schoolName',  'authenticate', function($sch_name) use ($app) {
+	
+            // check for required params
+            verifyRequiredParams(array( 'sch_situated_in'));
+			
+			global $currunt_user_id;
+
+            $response = array();
+
+            // reading put params
+            $sch_situated_in = $app->request->put('sch_situated_in');
+
+            $schoolManagement = new SchoolManagement();
+			$res = $schoolManagement->updateSchool($sch_name, $sch_situated_in,$currunt_user_id);
+			
+            if ($res == UPDATE_SUCCESSFULLY) {
+                $response["error"] = false;
+                $response["message"] = "You are successfully updated school";
+            } else if ($res == UPDATE_FAILED) {
+                $response["error"] = true;
+                $response["message"] = "Oops! An error occurred while updating school";
+            } else if ($res == NOT_EXISTED) {
+                $response["error"] = true;
+                $response["message"] = "Sorry, this school is not exist";
+            }
+            // echo json response
+            echoRespnse(201, $response);
+        });
+
+
 
 
 /**
@@ -131,19 +167,19 @@ $app->delete('/school_delete', 'authenticate', function() use ($app) {
 
 		
 /**
- * get one talant
+ * get one school
  * method GET
- * url /talant/:talantsName       
+ * url /school/:schoolName       
  */
-$app->get('/talant/:tal_name', 'authenticate', function($tal_name) {
+$app->get('/school/:schoolName', 'authenticate', function($sch_name) {
             global $currunt_user_id;
             $response = array();
             
-			$talantsManagement = new TalantsManagement();
-			$res = $talantsManagement->getTalantByTalantName($tal_name);
+			$schoolManagement = new SchoolManagement();
+			$res = $schoolManagement->getSchoolBySchoolName($sch_name);
 
             $response["error"] = false;
-            $response["talant"] = $res;
+            $response["school"] = $res;
 
             
 
@@ -151,31 +187,32 @@ $app->get('/talant/:tal_name', 'authenticate', function($tal_name) {
         });
 
 /**
- * Listing all talants
+ * Listing all schools
  * method GET
- * url /talants        
+ * url /school        
  */
-$app->get('/talants', 'authenticate', function() {
+$app->get('/school', 'authenticate', function() {
             global $user_id;
 			
             $response = array();
 			
-            $talantsManagement = new TalantsManagement();
-			$res = $talantsManagement->getAllTalants();
+            $schoolManagement = new SchoolManagement();
+			$res = $schoolManagement->getAllSchools();
 
             $response["error"] = false;
-            $response["talants"] = array();
+            $response["schools"] = array();
 
             // looping through result and preparing talants array
-            while ($talants = $res->fetch_assoc()) {
+            while ($school = $res->fetch_assoc()) {
                 $tmp = array();
 				
-                $tmp["tal_name"] = $talants["tal_name"];
-                $tmp["status"] = $talants["status"];
-                $tmp["recode_added_at"] = $talants["recode_added_at"];
-				$tmp["recode_added_by"] = $talants["recode_added_by"];
+                $tmp["sch_name"] = $school["sch_name"];
+				$tmp["sch_situated_in"] = $school["sch_situated_in"];
+                $tmp["status"] = $school["status"];
+                $tmp["recode_added_at"] = $school["recode_added_at"];
+				$tmp["recode_added_by"] = $school["recode_added_by"];
 				
-                array_push($response["talants"], $tmp);
+                array_push($response["schools"], $tmp);
             }
 
             echoRespnse(200, $response);
