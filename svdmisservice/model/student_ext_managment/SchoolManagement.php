@@ -4,7 +4,7 @@ require_once '../../model/commen/PassHash.php';
  * Class to handle all the talant details
  * This class will have CRUD methods for talant
  *
- * @author Bagya
+ * @author Janadhi
  *
  */
 
